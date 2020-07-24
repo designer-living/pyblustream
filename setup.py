@@ -9,7 +9,7 @@ setup(
     author='foxy82',
     author_email='foxy82.github@gmail.com',
     url='https://github.com/foxy82/pyblustream',
-    download_url='https://github.com/foxy82/pyblustream/archive/v_01.tar.gz',
+    download_url='https://github.com/foxy82/pyblustream/archive/0.1.tar.gz',
     keywords=['Blustream', 'Elan', 'HDBaseT'],
     install_requires=[
     ],
