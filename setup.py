@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='pyblustream',
     packages=['pyblustream'],
-    version='0.1',
+    version='0.2',
     license='Apache 2.0',
     description='Control Blustream and Elan HDBaseT Matrix',
     author='foxy82',
