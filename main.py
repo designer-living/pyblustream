@@ -6,6 +6,8 @@ import sys
 from pyblustream.listener import LoggingListener
 from pyblustream.matrix import Matrix
 
+STOP = asyncio.Event()
+
 
 def print_usage():
     print('main.py -h <matrix ip address> [-p <port> -s <output_id> -o <output_id> -i <input_id> -a -l]')
@@ -17,7 +19,7 @@ def print_usage():
     print('\t-l\t\t\t\t\t\t\tContinue running and listen for source changes')
 
 
-def main(argv):
+async def main(argv):
     ip = None
     port = 23
     input_id = None
@@ -57,30 +59,36 @@ def main(argv):
 
     logging.info("starting up..")
 
-    my_loop = asyncio.get_event_loop()
-
-    matrix = Matrix(ip, port, loop=my_loop)
+    matrix = Matrix(ip, port)
     if listen:
         matrix.register_listener(LoggingListener())
     matrix.connect()
 
     delay = 1
     if output_id is not None and input_id is not None:
-        my_loop.create_task(change_source(delay, output_id, input_id, matrix))
+        asyncio.create_task(change_source(delay, output_id, input_id, matrix))
         delay += 1
 
     if status_output_id is not None:
-        my_loop.create_task(status(delay, status_output_id, matrix))
+        asyncio.create_task(status(delay, status_output_id, matrix))
         delay += 1
 
     if get_statuses:
-        my_loop.create_task(statuses(delay, matrix))
+        asyncio.create_task(statuses(delay, matrix))
         delay += 1
 
-    if listen:
-        my_loop.run_forever()
-    else:
-        my_loop.run_until_complete(done(delay))
+    if not listen:
+        await asyncio.create_task(schedule_exit(delay))
+    await STOP.wait()
+
+
+def ask_exit(*args):
+    STOP.set()
+
+
+async def schedule_exit(delay):
+    await asyncio.sleep(delay)
+    ask_exit()
 
 
 async def done(delay):
@@ -106,4 +114,8 @@ async def statuses(delay, matrix):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main(sys.argv[1:])
+    try:
+        asyncio.run(main(sys.argv[1:]))
+    except KeyboardInterrupt:
+        ask_exit()
+    logging.info("Finished")

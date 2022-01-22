@@ -13,16 +13,14 @@ class MatrixProtocol(asyncio.Protocol):
 
     _source_change_callback: SourceChangeListener
 
-    def __init__(self, hostname, port, callback: SourceChangeListener, loop=None, heartbeat_time=5, reconnect_time=10):
+    def __init__(self, hostname, port, callback: SourceChangeListener, heartbeat_time=5, reconnect_time=10):
         self._logger = logging.getLogger(__name__)
         self._heartbeat_time = heartbeat_time
         self._reconnect_time = reconnect_time
         self._hostname = hostname
         self._port = port
         self._source_change_callback = callback
-        self._loop = loop
-        if self._loop is None:
-            self._loop = asyncio.get_event_loop()
+        self._loop = asyncio.get_event_loop()
 
         self._connected = False
         self._transport = None

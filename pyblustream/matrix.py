@@ -4,9 +4,9 @@ from pyblustream.protocol import MatrixProtocol
 
 class Matrix:
 
-    def __init__(self, hostname, port, loop=None):
+    def __init__(self, hostname, port):
         self._multiplex_callback = MultiplexingListener()
-        self._protocol = MatrixProtocol(hostname, port, self._multiplex_callback, loop=loop)
+        self._protocol = MatrixProtocol(hostname, port, self._multiplex_callback)
 
     def connect(self):
         self._protocol.connect()
