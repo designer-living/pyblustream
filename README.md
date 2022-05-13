@@ -14,14 +14,14 @@ Installation
     $ pip install pyblustream
 
 Using on the command line as a script
-===========================
+=====================================
+
 
     main.py -h <matrix ip address> [-p <port> -s <output_id> -o <output_id> -i <input_id> -a -l]
 	    -h hostname or ip		Hostname or IP of the matrix - required
 	    -p port			Port of the matrix to connect to - defaults to 23
-	    -o output_id -i input_id	Set output ID to use input ID - specified as an int e.g. -i 2 -o 4 
-	                                both must be specified
-	    -s output_id	        Display the input for this output ID must be specified as a string zero starting e.g. 02
+	    -o output_id -i input_id	Set output ID to use input ID - specified as an int e.g. -i 2 -o 4 both must be specified
+	    -s output_id	        Display the input for this output ID must be an int e.g. 2
 	    -a				Display the input for all outputs
 	    -l				Continue running and listen for source changes
 
