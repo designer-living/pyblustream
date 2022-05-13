@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from pyblustream.listener import SourceChangeListener
 from pyblustream.matrix import Matrix
@@ -46,18 +47,28 @@ async def main():
     matrix.connect()
     await connected_event.wait()
 
-    # Programmatically change the source for output 2 to input 3.
-    matrix.change_source(2, 3)
+    await asyncio.sleep(2)
 
+    # Programmatically change the source for output 2 to input 3.
+    matrix.change_source(3, 5)
+
+    print("--- All Outputs --- ")
     all_outputs = matrix.status_of_all_outputs()
-    input_for_zone_one = matrix.status_of_output("01")
+    print(all_outputs)
+    print("--- Input for Zone 1 --- ")
+    input_for_zone_one = matrix.status_of_output(1)
+    print(input_for_zone_one)
 
     # Force the matrix to refresh its status
     # This is done automatically on startup/reconnect, so you shouldn't need to do this
     matrix.update_status()
 
-    await asyncio.sleep(20)
+    await asyncio.sleep(1)
+    matrix.close()
+    await asyncio.sleep(1)
+
     print("Done")
 
 if __name__ == '__main__':
+    logging.basicConfig(level='INFO')
     asyncio.run(main())

@@ -6,7 +6,7 @@ import logging
 class SourceChangeListener(ABC):
 
     @abstractmethod
-    def source_changed(self, output_id, input_id):
+    def source_changed(self, output_id: int, input_id: int):
         pass
 
     @abstractmethod
@@ -25,7 +25,7 @@ class MultiplexingListener(SourceChangeListener):
     def __init__(self):
         self._listeners = []
 
-    def source_changed(self, output_id, input_id):
+    def source_changed(self, output_id: int, input_id: int):
         for listener in self._listeners:
             listener.source_changed(output_id, input_id)
 
@@ -37,10 +37,10 @@ class MultiplexingListener(SourceChangeListener):
         for listener in self._listeners:
             listener.disconnected()
 
-    def register_listener(self, listener):
+    def register_listener(self, listener: SourceChangeListener):
         self._listeners.append(listener)
 
-    def unregister_listener(self, listener):
+    def unregister_listener(self, listener: SourceChangeListener):
         self._listeners.remove(listener)
 
 
@@ -52,7 +52,7 @@ class LoggingListener(SourceChangeListener):
     def disconnected(self):
         logging.info(f"Disconnected")
 
-    def source_changed(self, output_id, input_id):
+    def source_changed(self, output_id: int, input_id: int):
         logging.info(f"{output_id} changed to input: {input_id}")
 
 
