@@ -59,3 +59,25 @@ TODO
 * Implement turn on / turn off
 * Make the input for change_source and status_of_output to be consistent
     
+Change Log
+=======================
+
+v0.4
+------------
+
+Implement Turn On/Turn Off for the matrix.
+
+v0.3
+------------
+
+Ensure that we only use `int` for input and output ids
+
+v0.2
+------------
+
+Upgrade to python 3.10
+
+v0.1
+------------
+
+Initial Release

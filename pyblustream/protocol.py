@@ -34,6 +34,7 @@ class MatrixProtocol(asyncio.Protocol):
         self.peer_name = None
         self._received_message = ""
         self._output_to_input_map = {}
+        self._matrix_on = False
         self._heartbeat_task = None
 
     def connect(self):
@@ -99,6 +100,7 @@ class MatrixProtocol(asyncio.Protocol):
 
     def _process_received_packet(self, message):
         match = SUCCESS_CHANGE.match(message)
+        # TODO process on off message.
         if match:
             self._logger.debug(f"Input change message received: {message}")
             output_id = match.group(1)
@@ -139,8 +141,11 @@ class MatrixProtocol(asyncio.Protocol):
             return_list.append((output_id, input_id))
         return return_list
 
+    def is_matrix_on(self) -> bool:
+        return self._matrix_on
+
     def send_turn_on_message(self):
-        pass
+        self._data_send(f"PON\r")
 
     def send_turn_off_message(self):
-        pass
+        self._data_send(f"POFF\r")
