@@ -12,7 +12,12 @@ class MyListener(SourceChangeListener):
 
     def source_changed(self, output_id, input_id):
         # Your code to run when the source changes
-        print("Source Changed Output ", output_id, " input ", input_id)
+        print(f"Source Changed Output {output_id}, input {input_id}")
+        pass
+
+    def power_changed(self, power: bool):
+        # Your code to run when the power changes
+        print(f"Power changed: {power} ")
         pass
 
     def connected(self):
@@ -47,7 +52,7 @@ async def main():
     matrix.connect()
     await connected_event.wait()
 
-    await asyncio.sleep(2)
+    await asyncio.sleep(20000)
 
     # Programmatically change the source for output 2 to input 3.
     matrix.change_source(3, 5)

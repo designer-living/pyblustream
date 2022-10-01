@@ -17,6 +17,10 @@ class SourceChangeListener(ABC):
     def disconnected(self):
         pass
 
+    @abstractmethod
+    def power_changed(self, power: bool):
+        pass
+
 
 class MultiplexingListener(SourceChangeListener):
 
@@ -28,6 +32,10 @@ class MultiplexingListener(SourceChangeListener):
     def source_changed(self, output_id: int, input_id: int):
         for listener in self._listeners:
             listener.source_changed(output_id, input_id)
+
+    def power_changed(self, power: bool):
+        for listener in self._listeners:
+            listener.power_changed(power)
 
     def connected(self):
         for listener in self._listeners:
@@ -55,6 +63,9 @@ class LoggingListener(SourceChangeListener):
     def source_changed(self, output_id: int, input_id: int):
         logging.info(f"{output_id} changed to input: {input_id}")
 
+    def power_changed(self, power: bool):
+        logging.info(f"Power changed to : {power}")
+
 
 class PrintingListener(SourceChangeListener):
 
@@ -66,3 +77,6 @@ class PrintingListener(SourceChangeListener):
 
     def source_changed(self, output_id, input_id):
         print(f"{output_id} changed to input: {input_id}")
+
+    def power_changed(self, power: bool):
+        print(f"Power changed to : {power}")
