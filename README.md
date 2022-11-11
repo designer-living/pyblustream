@@ -56,11 +56,15 @@ TODO
 =======================
 
 * Get names of inputs and outputs from the matrix
-* Implement turn on / turn off
-* Make the input for change_source and status_of_output to be consistent
     
 Change Log
 =======================
+
+v0.5
+------------
+
+Extract the functionality "turn the matrix on when it is off and a change source is received." to a listener
+so that it is easier to use.
 
 v0.4
 ------------
