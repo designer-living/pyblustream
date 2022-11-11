@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import re
-import time
 from asyncio import Task
 from typing import Any, Optional
 
@@ -19,7 +18,7 @@ SUCCESS_POWER = re.compile(r'.*SUCCESS.*Set system power\s*(\w+).*')
 # Sent from app comes like this:
 # EL-4KPM-V88> out06fr02
 # OUTPUT_CHANGE = re.compile('.*(?:OUT|out)\\s*([0-9]+)\\s*(?:FR|fr)\\s*([0-9]+).*', re.IGNORECASE)
-OUTPUT_CHANGE = re.compile(r'.*OUT\s*(\d+)\s*FR\s*(\d+).*', re.IGNORECASE)
+OUTPUT_CHANGE_REQUESTED = re.compile(r'.*OUT\s*(\d+)\s*FR\s*(\d+).*', re.IGNORECASE)
 
 # The line in a status message that shows the input/output status:
 # '01	     01		  No /Yes	  Yes/SRC   	HDBT      ON '
@@ -35,7 +34,6 @@ POWER_STATUS_LINE = re.compile(r'.*(ON|OFF)\s+(ON|OFF)\s+(ON|OFF)\s+(ON|OFF)\s+(
 # [ERROR]System is power off, please turn it on first.
 ERROR_OFF = re.compile(r'.*ERROR.*System is power off, please turn it on first.*')
 
-TIMEOUT_SECONDS = 15
 
 class MatrixProtocol(asyncio.Protocol):
 
@@ -63,12 +61,6 @@ class MatrixProtocol(asyncio.Protocol):
         self._matrix_on = False
         self._heartbeat_task = None
 
-        # This is a nice to have - if someone tries to change the matrix source (e.g. using the phone app)
-        # We will spot the matrix isn't on - turn it on for them and then re-send the change source message.
-        self.last_output_id = None
-        self.last_input_id = None
-        self.last_set_at = 0
-        self.change_source_on_power_on = False
 
     def connect(self):
         connection_task = self._loop.create_connection(lambda: self, host=self._hostname, port=self._port)
@@ -131,6 +123,7 @@ class MatrixProtocol(asyncio.Protocol):
         self._logger.debug(f"data_send client: {message.encode()}")
         self._transport.write(message.encode())
 
+    # noinspection DuplicatedCode
     def _process_received_packet(self, message):
 
         # Message received in response to anyone changing the source.
@@ -148,38 +141,23 @@ class MatrixProtocol(asyncio.Protocol):
             self._logger.debug(f"Power change message received: {message}")
             power = success_power_match.group(1)
             self._process_power_changed(power)
-            if self.change_source_on_power_on:
-                self.change_source_on_power_on = False
-                self._logger.info(
-                    f"Attempting to change matrix source output {self.last_output_id} to input {self.last_input_id}")
-                self.send_change_source(int(self.last_input_id), int(self.last_output_id))
-                self.last_output_id = None
-                self.last_input_id = None
-
             return
 
-        # Someone has sent a message to change the source
-        output_change_match = OUTPUT_CHANGE.match(message)
+        # Someone has sent a message to change the source - this is just for info we don't need to do anything on this.
+        output_change_match = OUTPUT_CHANGE_REQUESTED.match(message)
         if output_change_match:
             self._logger.debug(f"Input change message received: {message}")
-            self.last_output_id = output_change_match.group(1)
-            self.last_input_id = output_change_match.group(2)
-            self.last_set_at = time.time()
+            output_id = int(output_change_match.group(1))
+            input_id = int(output_change_match.group(2))
+            self._source_change_callback.source_change_requested(output_id, input_id)
             return
 
+        # Error received when someone tries to change a source whilst the matrix is powered off.
         error_match = ERROR_OFF.match(message)
         if error_match:
             self._logger.info(f"Error message received: {message}")
-            error_at = time.time()
-            if self.last_set_at > (error_at - TIMEOUT_SECONDS) and\
-                    self.last_input_id is not None and\
-                    self.last_output_id is not None:
-                self.last_set_at = 0
-                self._logger.info(f"Attempting to turn on matrix")
-                self.send_turn_on_message()
-                self.change_source_on_power_on = True
-                # We will change the source once we get a successful matrix turned on event.
-            return
+            self._source_change_callback.error(message)
+
 
         # Lines that show inputs/outputs when someone has called STATUS
         input_status_change_match = INPUT_STATUS_LINE.match(message)
