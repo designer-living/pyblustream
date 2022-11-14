@@ -60,6 +60,11 @@ TODO
 Change Log
 =======================
 
+v0.6
+------------
+
+Fix incorrect method name in TurningOnListener.
+
 v0.5
 ------------
 

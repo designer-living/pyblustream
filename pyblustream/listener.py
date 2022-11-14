@@ -126,7 +126,7 @@ class TurningOnListener(SourceChangeListener):
                 f"Attempting to change matrix source output "
                 f"{self.last_requested_output_id} to input {self.last_requested_input_id}"
             )
-            self.matrix.send_change_source(int(self.last_requested_input_id), int(self.last_requested_output_id))
+            self.matrix.change_source(int(self.last_requested_input_id), int(self.last_requested_output_id))
             self.last_requested_output_id = None
             self.last_requested_input_id = None
 
@@ -137,7 +137,7 @@ class TurningOnListener(SourceChangeListener):
                 self.last_requested_output_id is not None:
             self.last_requested_at = 0
             print(f"Attempting to turn on matrix")
-            self.matrix.send_turn_on_message()
+            self.matrix.turn_on()
             self.change_source_on_power_on = True
             # We will change the source once we get a successful matrix turned on event.
 
