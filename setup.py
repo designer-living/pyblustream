@@ -19,6 +19,7 @@ setup(
     download_url=f'https://github.com/foxy82/pyblustream/archive/{version}.tar.gz',
     keywords=['Blustream', 'Elan', 'HDBaseT'],
     install_requires=[
+        'aiohttp'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

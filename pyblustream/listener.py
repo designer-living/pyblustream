@@ -145,3 +145,13 @@ class TurningOnListener(SourceChangeListener):
         self.last_requested_output_id = output_id
         self.last_requested_input_id = input_id
         self.last_requested_at = time.time()
+
+
+class MatrixConfig:
+
+    def __init__(self, mac, name, software_version, inputs, outputs):
+        self.mac = mac
+        self.name = name
+        self.software_version = software_version
+        self.inputs = inputs
+        self.outputs = outputs
