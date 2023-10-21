@@ -66,7 +66,10 @@ class MultiplexingListener(SourceChangeListener):
         self._listeners.append(listener)
 
     def unregister_listener(self, listener: SourceChangeListener):
-        self._listeners.remove(listener)
+        if listener in self._listeners:
+            self._listeners.remove(listener)
+        else:
+            logging.info(f"Listener isn't registered")
 
 
 class LoggingListener(SourceChangeListener):
