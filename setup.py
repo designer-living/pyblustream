@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.6'
+version = '0.7'
 
 with open("README.md", "rb") as f:
     long_descr = f.read().decode("utf-8")
@@ -21,7 +21,7 @@ setup(
     install_requires=[
     ],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: Apache Software License',

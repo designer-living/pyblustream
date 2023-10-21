@@ -60,6 +60,12 @@ TODO
 Change Log
 =======================
 
+v0.7
+------------
+
+Don't error when a nonexistent listener is removed - log a warning instead.
+
+
 v0.6
 ------------
 
