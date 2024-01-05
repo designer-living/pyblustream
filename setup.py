@@ -15,8 +15,8 @@ setup(
     long_description_content_type='text/markdown',    
     author='foxy82',
     author_email='foxy82.github@gmail.com',
-    url='https://github.com/foxy82/pyblustream',
-    download_url=f'https://github.com/foxy82/pyblustream/archive/{version}.tar.gz',
+    url='https://github.com/designer-living/pyblustream',
+    download_url=f'https://github.com/foxy82/designer-living/archive/{version}.tar.gz',
     keywords=['Blustream', 'Elan', 'HDBaseT'],
     install_requires=[
     ],
