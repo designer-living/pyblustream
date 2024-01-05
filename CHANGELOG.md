@@ -1,6 +1,17 @@
 Change Log
 =======================
 
+v0.10
+------------
+
+Fix missing version bump 
+
+v0.9
+------------
+
+Fix url to github organisation
+
+
 v0.8
 ------------
 
