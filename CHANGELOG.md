@@ -1,10 +1,17 @@
 Change Log
 =======================
 
+v0.12
+------------
+
+Don't error if close() is called on a matrix that hasn't connected successfully.
+Added mtrix metadata but you must use async_connect for this to be populated. 
+
+
 v0.11
 ------------
 
-
+Add async_connect method
 
 v0.10
 ------------

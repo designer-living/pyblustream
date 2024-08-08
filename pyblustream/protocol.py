@@ -73,7 +73,8 @@ class MatrixProtocol(asyncio.Protocol):
 
     def close(self):
         self._reconnect = False
-        self._transport.close()
+        if self._transport:
+            self._transport.close()
 
     def connection_made(self, transport):
         """ Method from asyncio.Protocol """

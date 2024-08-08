@@ -57,6 +57,12 @@ async def main():
     # Or the async way
     await matrix.async_connect()
 
+    print(matrix.output_names)
+    print(matrix.input_names)
+    print(matrix.mac)
+    print(matrix.device_name)
+    print(matrix.firmware_version)
+
     await asyncio.sleep(20000)
 
     # Programmatically change the source for output 2 to input 3.
