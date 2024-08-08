@@ -1,11 +1,12 @@
 Change Log
 =======================
 
-v0.12
+v 0.14
 ------------
 
 Don't error if close() is called on a matrix that hasn't connected successfully.
 Added mtrix metadata but you must use async_connect for this to be populated. 
+Bumped aiohttp version
 
 
 v0.11
