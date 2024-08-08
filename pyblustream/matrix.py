@@ -70,6 +70,9 @@ class Matrix:
     def turn_off(self):
         self._protocol.send_turn_off_message()
 
+    def is_on(self) -> bool:
+        return self._protocol.is_matrix_on
+
     def register_listener(self, listener):
         self._multiplex_callback.register_listener(listener)
 
