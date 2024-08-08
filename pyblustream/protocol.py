@@ -66,11 +66,17 @@ class MatrixProtocol(asyncio.Protocol):
         connection_task = self._loop.create_connection(lambda: self, host=self._hostname, port=self._port)
         self._loop.create_task(connection_task)
 
+    async def async_connect(self):
+        transport, protocol = await self._loop.create_connection(
+            lambda: self, host=self._hostname, port=self._port
+        )
+
     def close(self):
         self._reconnect = False
         self._transport.close()
 
     def connection_made(self, transport):
+        """ Method from asyncio.Protocol """
         self._connected = True
         self._transport = transport
         self.peer_name = transport.get_extra_info("peername")
@@ -86,12 +92,17 @@ class MatrixProtocol(asyncio.Protocol):
             self._logger.debug('heartbeat')
             self._data_send("\n")
 
-    async def wait_to_reconnect(self):
+    async def _wait_to_reconnect(self):
+        # TODO with the new async_connect I think we can make this much easier - but I can't test right now
+        # so not changing yet:
+        # await self.async_connect()
+        # using old sync connect.
         while not self._connected and self._reconnect:
             await asyncio.sleep(self._reconnect_time)
             self.connect()
 
     def connection_lost(self, exc):
+        """ Method from asyncio.Protocol """
         self._connected = False
         self._heartbeat_task.cancel()
         disconnected_message = f"Disconnected from {self._hostname}"
@@ -104,10 +115,11 @@ class MatrixProtocol(asyncio.Protocol):
             self._logger.info(disconnected_message)
         self._source_change_callback.disconnected()
         if self._reconnect:
-            self._loop.create_task(self.wait_to_reconnect())
+            self._loop.create_task(self._wait_to_reconnect())
         pass
 
     def data_received(self, data):
+        """ Method from asyncio.Protocol """
         self._logger.debug(f"data_received client: {data}")
 
         for letter in data:

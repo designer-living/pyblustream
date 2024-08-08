@@ -49,19 +49,24 @@ async def main():
     matrix.register_listener(MyListener(connected_event))
     # You always need to connect to the matrix - best to do this after
     # adding your listener to avoid missing the initial status that is returned on start up
-    matrix.connect()
-    await connected_event.wait()
+
+    # Either
+    #matrix.connect()
+    #await connected_event.wait()
+
+    # Or the async way
+    await matrix.async_connect()
 
     await asyncio.sleep(20000)
 
     # Programmatically change the source for output 2 to input 3.
-    matrix.change_source(3, 5)
+    matrix.change_source(input_id=6, output_id=5)
 
     print("--- All Outputs --- ")
     all_outputs = matrix.status_of_all_outputs()
     print(all_outputs)
     print("--- Input for Zone 1 --- ")
-    input_for_zone_one = matrix.status_of_output(1)
+    input_for_zone_one = matrix.status_of_output(output_id=1)
     print(input_for_zone_one)
 
     # Force the matrix to refresh its status

@@ -13,6 +13,9 @@ class Matrix:
     def connect(self):
         self._protocol.connect()
 
+    async def async_connect(self):
+        await self._protocol.async_connect()
+
     def close(self):
         self._protocol.close()
 
