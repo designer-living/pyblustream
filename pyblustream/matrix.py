@@ -8,7 +8,7 @@ import xmltodict
 class Matrix:
 
     def __init__(self, hostname, port):
-        self._hostname = hostname
+        self.hostname = hostname
         self._multiplex_callback = MultiplexingListener()
         self._protocol = MatrixProtocol(hostname, port, self._multiplex_callback)
         self.output_names = {}
@@ -42,7 +42,7 @@ class Matrix:
             self.output_names[index] = output_name
 
     async def _get_matrix_metadata(self) -> str:
-        url = f"http://{self._hostname}/cgi-bin/getxml.cgi?xml=mxsta"
+        url = f"http://{self.hostname}/cgi-bin/getxml.cgi?xml=mxsta"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
