@@ -1,7 +1,7 @@
 Change Log
 =======================
 
-v 0.14
+v 0.15
 ------------
 
 Don't error if close() is called on a matrix that hasn't connected successfully.
