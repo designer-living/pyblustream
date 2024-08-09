@@ -1,6 +1,16 @@
 Change Log
 =======================
 
+v 0.19
+------------
+
+Add:
+  outputs_by_id
+  outputs_by_name 
+  inputs_by_id 
+  inputs_by_name
+
+
 v 0.18
 ------------
 
