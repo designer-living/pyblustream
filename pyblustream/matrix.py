@@ -38,6 +38,11 @@ class Matrix:
     def change_source(self, input_id: int, output_id: int):
         self._protocol.send_change_source(input_id, output_id)
 
+    def change_source_by_name(self, input_name: str, output_name: str):
+        input_id = self.inputs_by_name(input_name)
+        output_id = self.outputs_by_name(output_name)
+        self._protocol.send_change_source(input_id, output_id)
+
     def update_status(self):
         self._protocol.send_status_message()
 

@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.19'
+version = '0.20'
 
 with open("README.md", "rb") as f:
     long_descr = f.read().decode("utf-8")
