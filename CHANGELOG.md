@@ -1,6 +1,13 @@
 Change Log
 =======================
 
+v 0.21
+------------
+
+Make dependencies less prescriptive
+Allow logger to be passed into Listeners
+
+
 v 0.20
 ------------
 
