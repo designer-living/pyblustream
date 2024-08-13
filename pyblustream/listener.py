@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import time
-from typing import List, Any
+from typing import List
 import logging
 
 
@@ -69,22 +69,25 @@ class MultiplexingListener(SourceChangeListener):
         if listener in self._listeners:
             self._listeners.remove(listener)
         else:
-            logging.info(f"Listener isn't registered")
+            logging.info("Listener isn't registered")
 
 
 class LoggingListener(SourceChangeListener):
 
+    def __init__(self, logger = logging):
+        self.logger = logger
+
     def connected(self):
-        logging.info(f"Connected")
+        self.logger.info("Connected")
 
     def disconnected(self):
-        logging.info(f"Disconnected")
+        self.logger.info("Disconnected")
 
     def source_changed(self, output_id: int, input_id: int):
-        logging.info(f"{output_id} changed to input: {input_id}")
+        self.logger.info(f"{output_id} changed to input: {input_id}")
 
     def power_changed(self, power: bool):
-        logging.info(f"Power changed to : {power}")
+        self.logger.info(f"Power changed to : {power}")
 
 
 class PrintingListener(SourceChangeListener):
@@ -103,15 +106,20 @@ class PrintingListener(SourceChangeListener):
 
 
 class TurningOnListener(SourceChangeListener):
+    """
+    Listener that will turn on the Matrix if a user makes a chnage using the matrix mobile app.
+    The standard behaviour for the mobile app is to ignore source changes if the matrix is turned off.
+    """
 
     TIMEOUT_SECONDS = 15
 
-    def __init__(self, matrix):
+    def __init__(self, matrix, logger = logging):
         self.last_requested_output_id = None
         self.last_requested_input_id = None
         self.last_requested_at = 0
         self.change_source_on_power_on = False
         self.matrix = matrix
+        self.logger = logger
 
     def source_changed(self, output_id: int, input_id: int):
         pass
@@ -125,7 +133,7 @@ class TurningOnListener(SourceChangeListener):
     def power_changed(self, power: bool):
         if self.change_source_on_power_on and power:
             self.change_source_on_power_on = False
-            print(
+            self.logger.info(
                 f"Attempting to change matrix source output "
                 f"{self.last_requested_output_id} to input {self.last_requested_input_id}"
             )
@@ -139,7 +147,7 @@ class TurningOnListener(SourceChangeListener):
                 self.last_requested_input_id is not None and\
                 self.last_requested_output_id is not None:
             self.last_requested_at = 0
-            print(f"Attempting to turn on matrix")
+            self.logger.info("Attempting to turn on matrix")
             self.matrix.turn_on()
             self.change_source_on_power_on = True
             # We will change the source once we get a successful matrix turned on event.
