@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.20'
+version = '0.21'
 
 with open("README.md", "rb") as f:
     long_descr = f.read().decode("utf-8")
@@ -19,8 +19,8 @@ setup(
     download_url=f'https://github.com/foxy82/designer-living/archive/{version}.tar.gz',
     keywords=['Blustream', 'Elan', 'HDBaseT'],
     install_requires=[
-        "aiohttp==3.10.1",
-        "xmltodict==0.13.0"
+        "aiohttp>=3.8.3",
+        "xmltodict>=0.11.0"
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
