@@ -8,7 +8,9 @@ from pyblustream.listener import SourceChangeListener
 
 # Success message after output has changed:
 # [SUCCESS]Set output 05 connect from input 03.
-SUCCESS_CHANGE = re.compile(r'.*SUCCESS.*output\s*(\d+)\sconnect from input\s*(\d+).*')
+SUCCESS_CHANGE = re.compile(
+    r'.*SUCCESS.*output\s*(\d+)\s(connect )?from input\s*(\d+).*'
+)
 # Success System powered off:
 # [SUCCESS]Set system power OFF
 # Success system powered on:
@@ -144,7 +146,7 @@ class MatrixProtocol(asyncio.Protocol):
         if success_change_match:
             self._logger.debug(f"Input change message received: {message}")
             output_id = success_change_match.group(1)
-            input_id = success_change_match.group(2)
+            input_id = success_change_match.group(3)
             self._process_input_changed(input_id, output_id)
             return
 
