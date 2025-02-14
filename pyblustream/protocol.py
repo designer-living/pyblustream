@@ -231,3 +231,11 @@ class MatrixProtocol(asyncio.Protocol):
 
     def send_turn_off_message(self):
         self._data_send(f"POFF\r")
+
+    async def send_guest_command(self, guest_is_input, guest_id, command):
+        prefix = "IN" if guest_is_input else "OUT"
+        open_command = f"{prefix}{guest_id:03}GUEST"
+        full_command = (
+            f"{open_command}\r\n{command.decode("ASCII")}\r\nCLOSEACMGUEST\r\n"
+        )
+        await self._data_send(full_command)
