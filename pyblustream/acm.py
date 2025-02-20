@@ -17,10 +17,8 @@ class ACM(Matrix):
     def get_initial_output_source_id(self, output_id):
         return self.output_details.get(output_id, {}).get("input_id", "")
 
-    async def send_guest_command(self, guest_is_input, guest_id, command):
-        return await self._protocol.send_guest_command(
-            guest_is_input, guest_id, command
-        )
+    def send_guest_command(self, guest_is_input, guest_id, command):
+        return self._protocol.send_guest_command(guest_is_input, guest_id, command)
 
     def _process_meta_data(self, metadata_json):
         # Extract required fields
