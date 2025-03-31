@@ -16,32 +16,33 @@ EL-4KPM-V88>
 # HTTP Interface (e.g. from mobile app)
 
 Flow is:
-On app startup: Request Matrix Details
-Poll Request Info on current state
-Send other commands based off user clicking buttons
+* On app startup: Request Matrix Details
+* Poll Request Info on current state
+* Send other commands based off user clicking buttons
 
 
 1. Request Source Change:
-URL: /cgi-bin/submit?cmd=out06fr04
-URL: /cgi-bin/submit?cmd=out05fr07
-URL: /cgi-bin/submit?cmd=out<outputID>fr<inputID>
-No Response
+** URL: /cgi-bin/submit?cmd=out06fr04
+** URL: /cgi-bin/submit?cmd=out05fr07
+** URL: /cgi-bin/submit?cmd=out<outputID>fr<inputID>
+** No Response
 
 
 4. Request vol change:
-URL: /cgi-bin/submit?cmd=vol25%20tx%206
-URL: /cgi-bin/submit?cmd=vol15%20tx%205
-URL: /cgi-bin/submit?cmd=vol<precentage>%20tx%20<outputID>
-No Response
+** URL: /cgi-bin/submit?cmd=vol25%20tx%206
+** URL: /cgi-bin/submit?cmd=vol15%20tx%205
+** URL: /cgi-bin/submit?cmd=vol<precentage>%20tx%20<outputID>
+** No Response
 
 5. Requset Mute
-URL: /cgi-bin/submit?cmd=muteoff%20tx%206
-URL: /cgi-bin/submit?cmd=muteon%20tx%206
-URL: /cgi-bin/submit?cmd=mute[on|off]%20tx%20<outputID>
-No Response
+** URL: /cgi-bin/submit?cmd=muteoff%20tx%206
+** URL: /cgi-bin/submit?cmd=muteon%20tx%206
+** URL: /cgi-bin/submit?cmd=mute[on|off]%20tx%20<outputID>
+** No Response
 
 6. Request Matrix details (on start up)
-URL: /cgi-bin/getxml.cgi?xml=usersta
+** URL: /cgi-bin/getxml.cgi?xml=usersta
+** Response:
 ```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <USERSTA>
@@ -64,8 +65,8 @@ URL: /cgi-bin/getxml.cgi?xml=usersta
 ```
 
 6. Request Info on current state:
-URL: /cgi-bin/getxml.cgi?xml=mxsta
-Respose:
+** URL: /cgi-bin/getxml.cgi?xml=mxsta
+** Respose:
 ```xml
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <MATRIX>
