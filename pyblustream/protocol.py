@@ -8,42 +8,52 @@ from pyblustream.listener import SourceChangeListener
 
 # Success message after output has changed:
 # [SUCCESS]Set output 05 connect from input 03.
-SUCCESS_CHANGE = re.compile(r'.*SUCCESS.*output\s*(\d+)\sconnect from input\s*(\d+).*')
+SUCCESS_CHANGE = re.compile(
+    r".*SUCCESS.*output\s*(\d+)\s(connect )?from input\s*(\d+).*"
+)
 # Success System powered off:
 # [SUCCESS]Set system power OFF
 # Success system powered on:
 # [SUCCESS]Set system power ON, please wait a moment... Done
-SUCCESS_POWER = re.compile(r'.*SUCCESS.*Set system power\s*(\w+).*')
+SUCCESS_POWER = re.compile(r".*SUCCESS.*Set system power\s*(\w+).*")
 
 # Sent from app comes like this:
 # EL-4KPM-V88> out06fr02
 # OUTPUT_CHANGE = re.compile('.*(?:OUT|out)\\s*([0-9]+)\\s*(?:FR|fr)\\s*([0-9]+).*', re.IGNORECASE)
-OUTPUT_CHANGE_REQUESTED = re.compile(r'.*OUT\s*(\d+)\s*FR\s*(\d+).*', re.IGNORECASE)
+OUTPUT_CHANGE_REQUESTED = re.compile(r".*OUT\s*(\d+)\s*FR\s*(\d+).*", re.IGNORECASE)
 
 # The line in a status message that shows the input/output status:
 # '01	     01		  No /Yes	  Yes/SRC   	HDBT      ON '
-INPUT_STATUS_LINE = re.compile(r'(\d\d)\s+(\d\d)[^:].*')
+INPUT_STATUS_LINE = re.compile(r"(\d\d)\s+(\d\d)[^:].*")
 # The line in a status message that shows the  system power status:
 # Power	IR	Key	Beep	LCD
 # ON 	ON 	ON 	OFF	ON
-FIRST_LINE = re.compile(r'.*Power\s+IR\s+Key\s+Beep\s+LCD.*')
-POWER_STATUS_LINE = re.compile(r'.*(ON|OFF)\s+(ON|OFF)\s+(ON|OFF)\s+(ON|OFF)\s+(ON|OFF).*')
+FIRST_LINE = re.compile(r".*Power\s+IR\s+Key\s+Beep\s+LCD.*")
+POWER_STATUS_LINE = re.compile(
+    r".*(ON|OFF)\s+(ON|OFF)\s+(ON|OFF)\s+(ON|OFF)\s+(ON|OFF).*"
+)
 
 # Received if you try to change inputs using the app when the matrix is OFF:
 # From the app: out04fr08
 # [ERROR]System is power off, please turn it on first.
-ERROR_OFF = re.compile(r'.*ERROR.*System is power off, please turn it on first.*')
+ERROR_OFF = re.compile(r".*ERROR.*System is power off, please turn it on first.*")
 
 
 class MatrixProtocol(asyncio.Protocol):
-
     _received_message: str
     _heartbeat_task: Optional[Task[Any]]
     _connected: bool
     _output_to_input_map: dict[int, int]
     _source_change_callback: SourceChangeListener
 
-    def __init__(self, hostname, port, callback: SourceChangeListener, heartbeat_time=5, reconnect_time=10):
+    def __init__(
+        self,
+        hostname,
+        port,
+        callback: SourceChangeListener,
+        heartbeat_time=5,
+        reconnect_time=10,
+    ):
         self._logger = logging.getLogger(__name__)
         self._heartbeat_time = heartbeat_time
         self._reconnect_time = reconnect_time
@@ -61,9 +71,10 @@ class MatrixProtocol(asyncio.Protocol):
         self._matrix_on = False
         self._heartbeat_task = None
 
-
     def connect(self):
-        connection_task = self._loop.create_connection(lambda: self, host=self._hostname, port=self._port)
+        connection_task = self._loop.create_connection(
+            lambda: self, host=self._hostname, port=self._port
+        )
         self._loop.create_task(connection_task)
 
     async def async_connect(self):
@@ -77,7 +88,7 @@ class MatrixProtocol(asyncio.Protocol):
             self._transport.close()
 
     def connection_made(self, transport):
-        """ Method from asyncio.Protocol """
+        """Method from asyncio.Protocol"""
         self._connected = True
         self._transport = transport
         self.peer_name = transport.get_extra_info("peername")
@@ -90,7 +101,7 @@ class MatrixProtocol(asyncio.Protocol):
     async def _heartbeat(self):
         while True:
             await asyncio.sleep(self._heartbeat_time)
-            self._logger.debug('heartbeat')
+            self._logger.debug("heartbeat")
             self._data_send("\n")
 
     async def _wait_to_reconnect(self):
@@ -103,12 +114,15 @@ class MatrixProtocol(asyncio.Protocol):
             self.connect()
 
     def connection_lost(self, exc):
-        """ Method from asyncio.Protocol """
+        """Method from asyncio.Protocol"""
         self._connected = False
         self._heartbeat_task.cancel()
         disconnected_message = f"Disconnected from {self._hostname}"
         if self._reconnect:
-            disconnected_message = disconnected_message + " will try to reconnect in {self._reconnect_time} seconds"
+            disconnected_message = (
+                disconnected_message
+                + " will try to reconnect in {self._reconnect_time} seconds"
+            )
             self._logger.error(disconnected_message)
         else:
             disconnected_message = disconnected_message + " not reconnecting"
@@ -120,17 +134,17 @@ class MatrixProtocol(asyncio.Protocol):
         pass
 
     def data_received(self, data):
-        """ Method from asyncio.Protocol """
+        """Method from asyncio.Protocol"""
         self._logger.debug(f"data_received client: {data}")
 
         for letter in data:
             # Don't add these to the message as we don't need them.
-            if letter != ord('\r') and letter != ord('\n'):
+            if letter != ord("\r") and letter != ord("\n"):
                 self._received_message += chr(letter)
-            if letter == ord('\n'):
+            if letter == ord("\n"):
                 self._logger.debug(f"Whole message: {self._received_message}")
                 self._process_received_packet(self._received_message)
-                self._received_message = ''
+                self._received_message = ""
 
     def _data_send(self, message):
         self._logger.debug(f"data_send client: {message.encode()}")
@@ -138,13 +152,12 @@ class MatrixProtocol(asyncio.Protocol):
 
     # noinspection DuplicatedCode
     def _process_received_packet(self, message):
-
         # Message received in response to anyone changing the source.
         success_change_match = SUCCESS_CHANGE.match(message)
         if success_change_match:
             self._logger.debug(f"Input change message received: {message}")
             output_id = success_change_match.group(1)
-            input_id = success_change_match.group(2)
+            input_id = success_change_match.group(3)
             self._process_input_changed(input_id, output_id)
             return
 
@@ -170,7 +183,6 @@ class MatrixProtocol(asyncio.Protocol):
         if error_match:
             self._logger.info(f"Error message received: {message}")
             self._source_change_callback.error(message)
-
 
         # Lines that show inputs/outputs when someone has called STATUS
         input_status_change_match = INPUT_STATUS_LINE.match(message)
@@ -204,7 +216,9 @@ class MatrixProtocol(asyncio.Protocol):
         self._source_change_callback.power_changed(power)
 
     def send_change_source(self, input_id: int, output_id: int):
-        self._logger.info(f"Sending Output source change message - Output: {output_id} changed to input: {input_id}")
+        self._logger.info(
+            f"Sending Output source change message - Output: {output_id} changed to input: {input_id}"
+        )
         self._data_send(f"out{output_id:02d}fr{input_id:02d}\r")
 
     def send_status_message(self):
@@ -229,3 +243,12 @@ class MatrixProtocol(asyncio.Protocol):
 
     def send_turn_off_message(self):
         self._data_send(f"POFF\r")
+
+    def send_guest_command(self, guest_is_input, guest_id, command):
+        prefix = "IN" if guest_is_input else "OUT"
+        prefix = prefix.encode("ASCII")
+        open_command = f"{prefix}{guest_id:03}GUEST".encode("ASCII")
+        close_command = "CLOSEACMGUEST".encode("ASCII")
+        rn = "\r\n".encode("ASCII")
+        full_command = open_command + rn + command + rn + close_command + rn
+        self._transport.write(full_command)
