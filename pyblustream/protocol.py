@@ -246,7 +246,6 @@ class MatrixProtocol(asyncio.Protocol):
 
     def send_guest_command(self, guest_is_input, guest_id, command):
         prefix = "IN" if guest_is_input else "OUT"
-        prefix = prefix.encode("ASCII")
         open_command = f"{prefix}{guest_id:03}GUEST".encode("ASCII")
         close_command = "CLOSEACMGUEST".encode("ASCII")
         rn = "\r\n".encode("ASCII")
